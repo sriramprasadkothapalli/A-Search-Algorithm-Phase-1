@@ -19,10 +19,6 @@ green = (0, 255, 0)  # For the clearance
 red = (255, 0, 0)  # For the obstacle space
 blue = (0,0,255)
 
-# Define obstacle parameters
-clearance = 5
-robot_radius = 5
-
 # Define hexagon parameters
 edge_length_ncl = 150  # Edge length with no clearance
 edge_length = 155.88  # Edge length with clearance
@@ -34,6 +30,7 @@ hexagon_points_no_clearance = [
     (cx + edge_length_ncl * math.cos(math.radians(angle)), cy + edge_length_ncl * math.sin(math.radians(angle)))
     for angle in angles
 ]
+clearance = int(input("Enter clearance(5mm): "))
 
 # Calculate the hexagon vertices with clearance
 hexagon_points = [
@@ -85,7 +82,7 @@ def draw_scene(screen):
         pygame.draw.rect(screen, green, line)
 
 
-def get_valid_input(prompt, robot_radius):
+def get_valid_input(prompt, robot_radius, clearance):
     while True:
         try:
             x = int(input(prompt + " X coordinate: "))
@@ -154,9 +151,10 @@ def draw_point_with_orientation(surface, point, orientation_deg):
     pygame.draw.line(surface, red, point[:2], (end_x, end_y), 2)  # Draw line representing robot orientation
 
 # Get input points
-start_point = get_valid_input("Enter start", robot_radius)
+robot_radius = int(input("Enter robot radius(5mm): "))
+start_point = get_valid_input("Enter start", robot_radius, clearance)
 start_theta = start_point[2]
-end_point = get_valid_input("End point", robot_radius)
+end_point = get_valid_input("End point", robot_radius, clearance)
 end_theta = end_point[2]
 L = float(input("Enter the step size (L): "))
 
