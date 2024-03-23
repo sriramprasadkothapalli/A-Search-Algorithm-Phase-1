@@ -40,8 +40,8 @@ hexagon_points = [
 
 def draw_scene(screen):
     # Fill the screen with white color
-    screen.fill((255, 255, 255))
-
+    #screen.fill((255, 255, 255))
+    screen.fill(black)
     # Draw the rectangle with clearance
     clearance_rectangles = [
         (100 - 5, 0 - 5, 75 + 10, 400 + 10),  # Left vertical
