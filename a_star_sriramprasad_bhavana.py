@@ -221,8 +221,8 @@ def euclidean_distance(point1, point2):
     return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
 
 
-# Initialize the visited matrix
-V = [[[0 for _ in range(12)] for _ in range(1200)] for _ in range(500)]
+# Initialize a set to store visited nodes
+visited_nodes = set()
 
 def round_coordinates(x, y, theta):
     # Round coordinates to the nearest threshold
@@ -234,12 +234,12 @@ def round_coordinates(x, y, theta):
 def is_visited(x, y, theta):
     # Check if the region has been visited
     new_x, new_y, new_theta = round_coordinates(x, y, theta)
-    return V[int(new_y)][int(new_x)][int(new_theta / 30)]
+    return (int(new_x), int(new_y), int(new_theta / 30)) in visited_nodes
 
 def mark_visited(x, y, theta):
     # Mark the region as visited
     new_x, new_y, new_theta = round_coordinates(x, y, theta)
-    V[int(new_y)][int(new_x)][int(new_theta / 30)] = 1
+    return visited_nodes.add((int(new_x), int(new_y), int(new_theta / 30)))
 
 
 def a_star_search(start, goal):
@@ -339,7 +339,7 @@ while running:
         break
 
     end = time.time()
-    print(end - start)
+    print("Time taken = ", (end - start) / 60, " min")
 
 pygame.quit()
 print("End")
