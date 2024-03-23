@@ -2,6 +2,7 @@ import pygame
 import math
 import time
 import heapq
+from shapely.geometry import Polygon, Point
 
 # Initialize Pygame
 pygame.init()
@@ -93,7 +94,7 @@ def get_valid_input(prompt, robot_radius):
             y = height - y
             if not (0 <= x <= 1200 and 0 <= y <= 500):
                 raise ValueError("Coordinates out of bounds")
-            elif point_inside_hexagon(x, y, hexagon_points, robot_radius):
+            elif point_inside_hexagon(x, y):
                 raise ValueError("Coordinates within hexagon obstacle space")
             elif point_inside_rectangle(x, y, robot_radius):
                 raise ValueError("Coordinates within rectangle obstacle space")
@@ -101,22 +102,23 @@ def get_valid_input(prompt, robot_radius):
         except ValueError as e:
             print("Invalid input:", e)
 
-def point_inside_hexagon(x, y, hexagon_points, robot_radius):
+hexagon = Polygon(hexagon_points)
+hexagon_obstacle = Polygon(hexagon_points)
+
+def point_inside_hexagon(x, y):
     # This assumes a regular hexagon and might not be directly applicable if your hexagon is irregular.
     # Adjust calculations based on your specific hexagon orientation and scale.
-    center_x, center_y = cx, cy  # Center of the hexagon
-    distance = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)  # Distance from point to center of hexagon
+    # center_x, center_y = cx, cy  # Center of the hexagon
+    # distance = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)  # Distance from point to center of hexagon
+    point = Point(x, y)
+    return point.within(hexagon_obstacle)
+    # # Check if within radius adjusted for robot clearance
+    # if distance > (edge_length_ncl + robot_radius):
+    #     return False  # Outside the hexagon + clearance
 
-    # Angle from vertical, adjust if your hexagon is differently oriented
-    angle = math.degrees(math.atan2(center_x - x, center_y - y)) % 360
-    angle_per_sector = 360 / 6  # 60 degrees for hexagon
+    # # Further checks can be added based on the angle if necessary for an irregular hexagon
+    # return True
 
-    # Check if within radius adjusted for robot clearance
-    if distance > (edge_length_ncl + robot_radius):
-        return False  # Outside the hexagon + clearance
-
-    # Further checks can be added based on the angle if necessary for an irregular hexagon
-    return True
 
 
 
@@ -201,11 +203,14 @@ def is_valid_point(x, y, theta):
     if not (0 <= x < width and 0 <= y < height):
         return False
 
-    # Check if the point is inside any obstacle space or clearance area
-    if point_inside_hexagon(x, y, hexagon_points, robot_radius) or \
-       point_inside_rectangle(x, y, robot_radius):
+    # # Check if the point is inside any obstacle space or clearance area
+    # if point_inside_hexagon(x, y, hexagon_points, robot_radius) or \
+    #    point_inside_rectangle(x, y, robot_radius):
+    #     return False
+    # Check if the point is inside the hexagon obstacle space
+    if point_inside_hexagon(x, y) or point_inside_rectangle(x, y, robot_radius):
         return False
-
+    
     # Check if the angle is within valid bounds
     if not (0 <= theta < 360):
         return False
@@ -323,7 +328,7 @@ while running:
         print("Start search")
         path = a_star_search(start_point, end_point)
         if path:
-            print(f"Path found: {path}")
+            #print(f"Path found: {path}")
             draw_path(screen, path)
             path_found = True
         else:
